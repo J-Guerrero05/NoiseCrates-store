@@ -6,32 +6,15 @@ import SamplePackCard from "../components/SamplePackCard";
 import Filters from "../components/Filters";
 import MyPurchases from "../components/MyPurchases";
 import { SamplePack, User } from "../types/types";
+import { useAuth } from "@/context/AuthContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const Index = () => {
   const [filteredPacks, setFilteredPacks] = useState<SamplePack[]>(samplePacks);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showPurchased, setShowPurchased] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-
-  // Mock functions for auth
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-    setUser({
-      id: "1",
-      name: "John Doe",
-      email: "john.doe@example.com",
-      avatarUrl: "https://randomuser.me/api/portraits/men/32.jpg",
-    });
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUser(null);
-    setShowPurchased(false);
-  };
+  const { user } = useAuth();
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -69,18 +52,10 @@ const Index = () => {
 
   return (
     <div className="bg-light min-vh-100">
-      <Navbar
-        onSearch={handleSearch}
-        isLoggedIn={isLoggedIn}
-        user={user}
-        onLogin={handleLogin}
-        onLogout={handleLogout}
-        setShowPurchased={setShowPurchased}
-        showPurchased={showPurchased}
-      />
+      <Navbar onSearch={handleSearch} />
 
       <div className="container">
-        {showPurchased && isLoggedIn ? (
+        {showPurchased && user ? (
           <MyPurchases purchasedPacks={purchasedPacks} />
         ) : (
           <>
