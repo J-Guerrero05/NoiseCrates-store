@@ -12,6 +12,12 @@ body {
   min-height: 100vh;
 }
 
+/* Toast positioning fix */
+.toast-container {
+  z-index: 9999;
+  margin-top: 60px !important; /* Ensures the toast doesn't overlap the navbar */
+}
+
 /* Bootstrap Overrides */
 .navbar-brand {
   font-weight: 700;
@@ -60,4 +66,21 @@ body {
 .badge {
   font-weight: 500;
   padding: 0.5em 0.75em;
+}
+
+/* Icon animations */
+.icon-logout {
+  transition: transform 0.3s ease;
+}
+
+.logout-btn:hover .icon-logout {
+  transform: translateX(3px);
+}
+
+.icon-profile {
+  transition: transform 0.3s ease;
+}
+
+.nav-link:hover .icon-profile {
+  transform: scale(1.2);
 }

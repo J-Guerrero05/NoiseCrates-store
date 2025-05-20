@@ -1,6 +1,6 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
@@ -26,7 +26,7 @@ const App = () => (
     <BrowserRouter>
       <AuthProvider>
         <CartProvider>
-          <Toaster position="top-right" />
+          <Toaster position="top-right" className="toast-container" />
           <div className="d-flex flex-column min-vh-100">
             <Routes>
               <Route path="/" element={<StorePage />} />
