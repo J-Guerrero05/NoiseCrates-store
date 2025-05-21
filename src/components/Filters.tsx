@@ -66,7 +66,7 @@ const Filters = ({ onFilterChange }: FiltersProps) => {
                   value={bpmRange.min}
                   onChange={(e) => handleBpmChange("min", parseInt(e.target.value))}
                   min={70}
-                  max={bpmRange.max}
+                  max={bpmRange.max-1}
                 />
               </div>
             </div>
@@ -78,7 +78,7 @@ const Filters = ({ onFilterChange }: FiltersProps) => {
                   className="form-control"
                   value={bpmRange.max}
                   onChange={(e) => handleBpmChange("max", parseInt(e.target.value))}
-                  min={bpmRange.min}
+                  min={bpmRange.min+1}
                   max={200}
                 />
               </div>
