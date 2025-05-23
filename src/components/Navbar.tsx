@@ -1,5 +1,5 @@
 
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useState } from "react";
@@ -13,12 +13,17 @@ const Navbar = ({ onSearch }: NavbarProps) => {
   const { user, signOut } = useAuth();
   const { totalItems } = useCart();
   const [searchQuery, setSearchQuery] = useState("");
+  const location = useLocation();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (onSearch) {
       onSearch(searchQuery);
     }
+  };
+  
+  const isActive = (path: string) => {
+    return location.pathname === path ? "active" : "";
   };
 
   return (
@@ -42,7 +47,7 @@ const Navbar = ({ onSearch }: NavbarProps) => {
               <input
                 className="form-control"
                 type="search"
-                placeholder="Search sample packs..."
+                placeholder="Search by name..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -54,12 +59,12 @@ const Navbar = ({ onSearch }: NavbarProps) => {
 
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <Link className="nav-link" to="/">
+              <Link className={`nav-link ${isActive("/")}`} to="/">
                 Store
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link position-relative" to="/cart">
+              <Link className={`nav-link position-relative ${isActive("/cart")}`} to="/cart">
                 Cart
                 {totalItems > 0 && (
                   <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -71,7 +76,7 @@ const Navbar = ({ onSearch }: NavbarProps) => {
             {user ? (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link d-flex align-items-center" to="/profile">
+                  <Link className={`nav-link d-flex align-items-center ${isActive("/profile")}`} to="/profile">
                     <User className="me-1 icon-profile" size={18} />
                     Profile
                   </Link>
@@ -88,7 +93,7 @@ const Navbar = ({ onSearch }: NavbarProps) => {
               </>
             ) : (
               <li className="nav-item">
-                <Link className="nav-link" to="/login">
+                <Link className={`nav-link ${isActive("/login")}`} to="/login">
                   Login / Register
                 </Link>
               </li>
