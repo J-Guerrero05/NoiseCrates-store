@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
-  const { items, removeFromCart, updateQuantity, totalPrice, clearCart } = useCart();
+  const { cart, removeFromCart, clearCart, totalPrice } = useCart();
   const { user } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ const Cart = () => {
       // In a real app, you would process payment here
       
       // Record purchases in Supabase
-      for (const item of items) {
+      for (const item of cart) {
         await supabase
           .from('purchased_packs')
           .insert([{ user_id: user.id, pack_id: item.id }])
@@ -43,7 +43,7 @@ const Cart = () => {
     }
   };
 
-  if (items.length === 0) {
+  if (cart.length === 0) {
     return (
       <div className="container py-5">
         <h2 className="mb-4">Your Cart</h2>
@@ -68,7 +68,7 @@ const Cart = () => {
         <div className="col-lg-8">
           <div className="card mb-4">
             <div className="card-body">
-              {items.map((item) => (
+              {cart.map((item) => (
                 <div key={item.id} className="row mb-3 align-items-center">
                   <div className="col-md-2 col-4">
                     <img
@@ -77,39 +77,14 @@ const Cart = () => {
                       className="img-fluid rounded"
                     />
                   </div>
-                  <div className="col-md-4 col-8">
+                  <div className="col-md-5 col-8">
                     <h5 className="mb-1">{item.title}</h5>
                     <p className="mb-0 text-muted">{item.genre} - {item.bpm}BPM</p>
                   </div>
-                  <div className="col-md-2 col-4 mt-3 mt-md-0">
-                    <div className="input-group input-group-sm">
-                      <button
-                        className="btn btn-outline-secondary"
-                        type="button"
-                        onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                      >
-                        -
-                      </button>
-                      <input
-                        type="number"
-                        className="form-control text-center"
-                        value={item.quantity}
-                        onChange={(e) => updateQuantity(item.id, parseInt(e.target.value) || 1)}
-                        min="1"
-                      />
-                      <button
-                        className="btn btn-outline-secondary"
-                        type="button"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      >
-                        +
-                      </button>
-                    </div>
+                  <div className="col-md-3 col-6 text-md-center mt-3 mt-md-0">
+                    ${item.price.toFixed(2)}
                   </div>
-                  <div className="col-md-2 col-4 text-md-center mt-3 mt-md-0">
-                    ${(item.price * item.quantity).toFixed(2)}
-                  </div>
-                  <div className="col-md-2 col-4 text-end mt-3 mt-md-0">
+                  <div className="col-md-2 col-6 text-end mt-3 mt-md-0">
                     <button
                       className="btn btn-sm btn-outline-danger"
                       onClick={() => removeFromCart(item.id)}

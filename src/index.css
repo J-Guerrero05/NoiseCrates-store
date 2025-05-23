@@ -12,6 +12,24 @@ body {
   min-height: 100vh;
 }
 
+/* Main content wrapper */
+.content-wrapper {
+  min-height: calc(100vh - 80px); /* Adjust based on footer height */
+  padding-bottom: 80px; /* Match footer height */
+}
+
+/* Fixed footer positioning */
+.site-footer {
+  width: 100%;
+  background-color: #212529;
+  color: #ffffff;
+  padding: 25px 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+}
+
 /* Toast positioning fix */
 .toast-container {
   z-index: 9999;
@@ -83,4 +101,17 @@ body {
 
 .nav-link:hover .icon-profile {
   transform: scale(1.2);
+}
+
+/* Footer link styles */
+.footer-link {
+  color: #ffffff;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.footer-link:hover {
+  opacity: 1;
+  color: #ffffff;
+  text-decoration: none;
 }

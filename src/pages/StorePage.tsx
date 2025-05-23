@@ -110,46 +110,6 @@ const StorePage = () => {
           )}
         </div>
       </div>
-
-      <footer className="bg-dark text-white mt-5 py-4">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-6">
-              <h5 className="mb-3">
-                <span className="text-primary">Noise</span>Crate
-              </h5>
-              <p className="small text-white">
-                The best marketplace for music producers to find high-quality sample packs.
-              </p>
-            </div>
-            <div className="col-md-2">
-              <h6 className="mb-3">Company</h6>
-              <ul className="nav flex-column">
-                <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-white small">About</a></li>
-                <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-white small">Contact</a></li>
-              </ul>
-            </div>
-            <div className="col-md-2">
-              <h6 className="mb-3">Legal</h6>
-              <ul className="nav flex-column">
-                <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-white small">Terms</a></li>
-                <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-white small">Privacy</a></li>
-              </ul>
-            </div>
-            <div className="col-md-2">
-              <h6 className="mb-3">Support</h6>
-              <ul className="nav flex-column">
-                <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-white small">Help Center</a></li>
-                <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-white small">FAQ</a></li>
-              </ul>
-            </div>
-          </div>
-          <hr className="my-3" />
-          <div className="d-flex justify-content-between">
-            <p className="small text-white">&copy; 2025 NoiseCrate. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };
