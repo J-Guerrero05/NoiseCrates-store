@@ -29,7 +29,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 const queryClient = new QueryClient();
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => (
-  <div className="bg-light">
+  <div className="d-flex flex-column min-vh-100">
     <Navbar />
     <div className="content-wrapper">
       {children}
@@ -44,37 +44,35 @@ const App = () => (
       <AuthProvider>
         <CartProvider>
           <Toaster position="top-right" className="toast-container" />
-          <div className="d-flex flex-column">
-            <Routes>
-              <Route path="/" element={<AppLayout><StorePage /></AppLayout>} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route 
-                path="/cart" 
-                element={
-                  <AuthGuard>
-                    <AppLayout><Cart /></AppLayout>
-                  </AuthGuard>
-                } 
-              />
-              <Route 
-                path="/profile" 
-                element={
-                  <AuthGuard>
-                    <AppLayout><Profile /></AppLayout>
-                  </AuthGuard>
-                } 
-              />
-              {/* Footer pages */}
-              <Route path="/about" element={<AppLayout><About /></AppLayout>} />
-              <Route path="/contact" element={<AppLayout><Contact /></AppLayout>} />
-              <Route path="/terms" element={<AppLayout><Terms /></AppLayout>} />
-              <Route path="/privacy" element={<AppLayout><Privacy /></AppLayout>} />
-              <Route path="/help" element={<AppLayout><Help /></AppLayout>} />
-              <Route path="/faq" element={<AppLayout><FAQ /></AppLayout>} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
+          <Routes>
+            <Route path="/" element={<AppLayout><StorePage /></AppLayout>} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route 
+              path="/cart" 
+              element={
+                <AuthGuard>
+                  <AppLayout><Cart /></AppLayout>
+                </AuthGuard>
+              } 
+            />
+            <Route 
+              path="/profile" 
+              element={
+                <AuthGuard>
+                  <AppLayout><Profile /></AppLayout>
+                </AuthGuard>
+              } 
+            />
+            {/* Footer pages */}
+            <Route path="/about" element={<AppLayout><About /></AppLayout>} />
+            <Route path="/contact" element={<AppLayout><Contact /></AppLayout>} />
+            <Route path="/terms" element={<AppLayout><Terms /></AppLayout>} />
+            <Route path="/privacy" element={<AppLayout><Privacy /></AppLayout>} />
+            <Route path="/help" element={<AppLayout><Help /></AppLayout>} />
+            <Route path="/faq" element={<AppLayout><FAQ /></AppLayout>} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>

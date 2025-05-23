@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 :root {
@@ -10,24 +9,22 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Main content wrapper */
 .content-wrapper {
-  min-height: calc(100vh - 80px); /* Adjust based on footer height */
-  padding-bottom: 80px; /* Match footer height */
+  flex: 1;
+  width: 100%;
 }
 
-/* Fixed footer positioning */
+/* Standard footer positioning at end of document flow */
 .site-footer {
   width: 100%;
   background-color: #212529;
   color: #ffffff;
   padding: 25px 0;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  z-index: 10;
 }
 
 /* Toast positioning fix */
