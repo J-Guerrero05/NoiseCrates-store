@@ -25,6 +25,7 @@ const Filters = ({ onFilterChange }: FiltersProps) => {
 
   const handleBpmScroll = (type: "min" | "max", event: React.WheelEvent) => {
     event.preventDefault();
+    event.stopPropagation();
     const delta = event.deltaY > 0 ? -1 : 1;
     const currentValue = bpmRange[type];
     let newValue = currentValue + delta;
@@ -41,12 +42,16 @@ const Filters = ({ onFilterChange }: FiltersProps) => {
     }
   };
 
+  const handleBpmFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+    event.target.select();
+  };
+
   return (
     <div className="filters mb-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h5 className="m-0">Filters</h5>
         <button 
-          className="btn btn-sm btn-outline-secondary d-md-none d-flex align-items-center"
+          className="btn btn-sm btn-outline-secondary d-md-none d-flex align-items-center animated-btn"
           onClick={() => setIsFiltersVisible(!isFiltersVisible)}
         >
           <Filter size={16} className="me-1" /> 
@@ -61,7 +66,7 @@ const Filters = ({ onFilterChange }: FiltersProps) => {
             {genres.map((genre) => (
               <button
                 key={genre}
-                className={`btn btn-sm ${
+                className={`btn btn-sm animated-btn ${
                   selectedGenre === genre ? "btn-primary" : "btn-outline-secondary"
                 }`}
                 onClick={() => handleGenreChange(genre)}
@@ -84,6 +89,7 @@ const Filters = ({ onFilterChange }: FiltersProps) => {
                   value={bpmRange.min}
                   onChange={(e) => handleBpmChange("min", parseInt(e.target.value))}
                   onWheel={(e) => handleBpmScroll("min", e)}
+                  onFocus={handleBpmFocus}
                   min={70}
                   max={bpmRange.max}
                 />
@@ -98,6 +104,7 @@ const Filters = ({ onFilterChange }: FiltersProps) => {
                   value={bpmRange.max}
                   onChange={(e) => handleBpmChange("max", parseInt(e.target.value))}
                   onWheel={(e) => handleBpmScroll("max", e)}
+                  onFocus={handleBpmFocus}
                   min={bpmRange.min}
                   max={200}
                 />

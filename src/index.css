@@ -48,6 +48,7 @@ body {
   cursor: ns-resize;
   user-select: none;
   transition: background-color 0.2s ease;
+  position: relative;
 }
 
 .bpm-input:hover {
@@ -56,6 +57,12 @@ body {
 
 .bpm-input:focus {
   cursor: text;
+  user-select: auto;
+}
+
+/* Prevent scroll propagation on BPM inputs */
+.bpm-input {
+  overscroll-behavior: none;
 }
 
 /* Animated Button Styles - Applied to all buttons */
