@@ -83,24 +83,24 @@ const Navbar = ({ onSearch }: NavbarProps) => {
                 </li>
                 <li className="nav-item">
                   <button 
-                    className="btn btn-outline-light btn-sm ms-2 d-flex align-items-center logout-btn animated-btn" 
+                    className="btn btn-outline-light compact-btn ms-2 d-flex align-items-center logout-btn animated-btn" 
                     onClick={() => signOut()}
                   >
-                    <LogOut className="me-1 icon-logout" size={16} />
+                    <LogOut className="me-1 icon-logout" size={14} />
                     Logout
                   </button>
                 </li>
               </>
             ) : (
-              <li className="nav-item d-flex gap-2">
+              <li className="nav-item d-flex gap-2 align-items-center">
                 <Link 
-                  className="btn btn-outline-primary btn-sm animated-btn" 
+                  className="btn btn-outline-primary compact-btn animated-btn" 
                   to="/login"
                 >
                   Login
                 </Link>
                 <Link 
-                  className="btn btn-primary btn-sm animated-btn" 
+                  className="btn btn-primary compact-btn animated-btn" 
                   to="/register"
                 >
                   Register

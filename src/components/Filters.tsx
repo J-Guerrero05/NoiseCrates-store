@@ -23,6 +23,24 @@ const Filters = ({ onFilterChange }: FiltersProps) => {
     onFilterChange(selectedGenre, newBpmRange.min, newBpmRange.max);
   };
 
+  const handleBpmScroll = (type: "min" | "max", event: React.WheelEvent) => {
+    event.preventDefault();
+    const delta = event.deltaY > 0 ? -1 : 1;
+    const currentValue = bpmRange[type];
+    let newValue = currentValue + delta;
+    
+    // Apply constraints
+    if (type === "min") {
+      newValue = Math.max(70, Math.min(newValue, bpmRange.max));
+    } else {
+      newValue = Math.max(bpmRange.min, Math.min(newValue, 200));
+    }
+    
+    if (newValue !== currentValue) {
+      handleBpmChange(type, newValue);
+    }
+  };
+
   return (
     <div className="filters mb-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -55,16 +73,17 @@ const Filters = ({ onFilterChange }: FiltersProps) => {
         </div>
 
         <div className="mb-3">
-          <label className="form-label">BPM Range</label>
+          <label className="form-label">BPM Range <small className="text-muted">(scroll over numbers to adjust)</small></label>
           <div className="row g-2">
             <div className="col">
               <div className="input-group input-group-sm">
                 <span className="input-group-text">Min</span>
                 <input
                   type="number"
-                  className="form-control"
+                  className="form-control bpm-input"
                   value={bpmRange.min}
                   onChange={(e) => handleBpmChange("min", parseInt(e.target.value))}
+                  onWheel={(e) => handleBpmScroll("min", e)}
                   min={70}
                   max={bpmRange.max}
                 />
@@ -75,9 +94,10 @@ const Filters = ({ onFilterChange }: FiltersProps) => {
                 <span className="input-group-text">Max</span>
                 <input
                   type="number"
-                  className="form-control"
+                  className="form-control bpm-input"
                   value={bpmRange.max}
                   onChange={(e) => handleBpmChange("max", parseInt(e.target.value))}
+                  onWheel={(e) => handleBpmScroll("max", e)}
                   min={bpmRange.min}
                   max={200}
                 />

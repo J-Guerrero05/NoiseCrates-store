@@ -34,6 +34,30 @@ body {
   margin-top: 60px !important; /* Ensures the toast doesn't overlap the navbar */
 }
 
+/* Compact button styles for header */
+.compact-btn {
+  padding: 0.25rem 0.75rem !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+  height: auto !important;
+  border-radius: 0.25rem !important;
+}
+
+/* BPM input scroll styling */
+.bpm-input {
+  cursor: ns-resize;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.bpm-input:hover {
+  background-color: #f8f9fa;
+}
+
+.bpm-input:focus {
+  cursor: text;
+}
+
 /* Animated Button Styles - Applied to all buttons */
 .animated-btn,
 .btn {
