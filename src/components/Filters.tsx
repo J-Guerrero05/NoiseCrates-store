@@ -93,7 +93,7 @@ const Filters = ({ onFilterChange }: FiltersProps) => {
                   onWheel={(e) => handleBpmScroll("min", e)}
                   onFocus={handleBpmFocus}
                   min={70}
-                  max={bpmRange.max}
+                  max={bpmRange.max-1}
                 />
               </div>
             </div>
@@ -107,7 +107,7 @@ const Filters = ({ onFilterChange }: FiltersProps) => {
                   onChange={(e) => handleBpmChange("max", parseInt(e.target.value))}
                   onWheel={(e) => handleBpmScroll("max", e)}
                   onFocus={handleBpmFocus}
-                  min={bpmRange.min}
+                  min={bpmRange.min+1}
                   max={200}
                 />
               </div>
