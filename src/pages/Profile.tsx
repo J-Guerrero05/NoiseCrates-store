@@ -1,11 +1,10 @@
-
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { SamplePack } from "@/types/types";
 import { toast } from "sonner";
 import { samplePacks } from "@/data/samplePacks";
-import { Link } from "react-router-dom";
+import ChangePassword from "@/components/ChangePassword";
 
 interface Profile {
   username: string;
@@ -19,6 +18,7 @@ const Profile = () => {
   const [purchasedPacks, setPurchasedPacks] = useState<SamplePack[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     full_name: ""
@@ -167,14 +167,14 @@ const Profile = () => {
                     </div>
                     <button 
                       type="button" 
-                      className="btn btn-primary me-2"
+                      className="btn btn-primary me-2 animated-btn"
                       onClick={handleSaveProfile}
                     >
                       Save Changes
                     </button>
                     <button 
                       type="button" 
-                      className="btn btn-outline-secondary"
+                      className="btn btn-outline-secondary animated-btn"
                       onClick={() => setIsEditMode(false)}
                     >
                       Cancel
@@ -187,8 +187,13 @@ const Profile = () => {
                     <p className="text-muted">{user?.email}</p>
                     <hr />
                     <div className="d-grid">
-                      <button onClick={handleEditProfile} className="btn btn-outline-primary mb-2">Edit Profile</button>
-                      <button className="btn btn-outline-secondary">Change Password</button>
+                      <button onClick={handleEditProfile} className="btn btn-outline-primary mb-2 animated-btn">Edit Profile</button>
+                      <button 
+                        className="btn btn-outline-secondary animated-btn"
+                        onClick={() => setShowChangePassword(true)}
+                      >
+                        Change Password
+                      </button>
                     </div>
                   </>
                 )}
@@ -240,7 +245,7 @@ const Profile = () => {
                           <td>${pack.price.toFixed(2)}</td>
                           <td>{new Date(pack.createdAt).toLocaleDateString()}</td>
                           <td>
-                            <button className="btn btn-sm btn-primary">
+                            <button className="btn btn-sm btn-primary animated-btn">
                               Download
                             </button>
                           </td>
@@ -254,6 +259,11 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      
+      {/* Change Password Modal */}
+      {showChangePassword && (
+        <ChangePassword onClose={() => setShowChangePassword(false)} />
+      )}
     </div>
   );
 };
