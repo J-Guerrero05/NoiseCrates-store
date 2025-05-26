@@ -24,25 +24,9 @@ const Filters = ({ onFilterChange }: FiltersProps) => {
   };
 
   const handleBpmScroll = (type: "min" | "max", event: React.WheelEvent) => {
-    // Completely prevent any scroll behavior
+    // Prevent any scroll behavior
     event.preventDefault();
     event.stopPropagation();
-    event.stopImmediatePropagation();
-    
-    // Also prevent default behavior on the document level temporarily
-    const preventScroll = (e: Event) => {
-      e.preventDefault();
-      e.stopPropagation();
-    };
-    
-    document.addEventListener('wheel', preventScroll, { passive: false });
-    document.addEventListener('touchmove', preventScroll, { passive: false });
-    
-    // Remove the event listeners after a short delay
-    setTimeout(() => {
-      document.removeEventListener('wheel', preventScroll);
-      document.removeEventListener('touchmove', preventScroll);
-    }, 100);
     
     const delta = event.deltaY > 0 ? -1 : 1;
     const currentValue = bpmRange[type];
