@@ -51,7 +51,7 @@ const Navbar = ({ onSearch }: NavbarProps) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button className="btn btn-primary" type="submit">
+              <button className="btn btn-primary animated-btn" type="submit">
                 <Search size={18} />
               </button>
             </div>
@@ -83,7 +83,7 @@ const Navbar = ({ onSearch }: NavbarProps) => {
                 </li>
                 <li className="nav-item">
                   <button 
-                    className="btn btn-outline-light btn-sm ms-2 d-flex align-items-center logout-btn" 
+                    className="btn btn-outline-light btn-sm ms-2 d-flex align-items-center logout-btn animated-btn" 
                     onClick={() => signOut()}
                   >
                     <LogOut className="me-1 icon-logout" size={16} />
@@ -92,9 +92,18 @@ const Navbar = ({ onSearch }: NavbarProps) => {
                 </li>
               </>
             ) : (
-              <li className="nav-item">
-                <Link className={`nav-link ${isActive("/login")}`} to="/login">
-                  Login / Register
+              <li className="nav-item d-flex gap-2">
+                <Link 
+                  className="btn btn-outline-primary btn-sm animated-btn" 
+                  to="/login"
+                >
+                  Login
+                </Link>
+                <Link 
+                  className="btn btn-primary btn-sm animated-btn" 
+                  to="/register"
+                >
+                  Register
                 </Link>
               </li>
             )}
