@@ -21,6 +21,7 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Help from "./pages/Help";
 import FAQ from "./pages/FAQ";
+import Admin from "./pages/Admin";
 
 // Bootstrap CSS
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -61,6 +62,14 @@ const App = () => (
               element={
                 <AuthGuard>
                   <AppLayout><Profile /></AppLayout>
+                </AuthGuard>
+              } 
+            />
+            <Route 
+              path="/admin" 
+              element={
+                <AuthGuard>
+                  <AppLayout><Admin /></AppLayout>
                 </AuthGuard>
               } 
             />
