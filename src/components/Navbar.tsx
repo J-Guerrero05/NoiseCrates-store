@@ -8,7 +8,7 @@ import { ShoppingCart, User, LogOut, Settings } from "lucide-react";
 const Navbar = () => {
   const { user, signOut } = useAuth();
   const { data: isAdmin } = useAdmin();
-  const { items } = useCart();
+  const { cart } = useCart();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -19,7 +19,7 @@ const Navbar = () => {
     }
   };
 
-  const cartItemCount = items.reduce((total, item) => total + item.quantity, 0);
+  const cartItemCount = cart.length;
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
