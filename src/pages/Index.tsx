@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { samplePacks, purchasedPacks } from "../data/samplePacks";
 import Navbar from "../components/Navbar";
@@ -52,7 +51,7 @@ const Index = () => {
 
   return (
     <div className="bg-light min-vh-100">
-      <Navbar onSearch={handleSearch} />
+      <Navbar />
 
       <div className="container">
         {showPurchased && user ? (
