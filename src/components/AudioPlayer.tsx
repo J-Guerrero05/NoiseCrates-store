@@ -16,9 +16,12 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio || !audioSrc) return;
+
+    console.log("Loading audio:", audioSrc);
 
     const setAudioData = () => {
+      console.log("Audio loaded, duration:", audio.duration);
       setDuration(audio.duration);
       setCurrentTime(audio.currentTime);
       setIsLoading(false);
@@ -29,11 +32,25 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
       setCurrentTime(currTime);
     };
 
-    const handleLoadStart = () => setIsLoading(true);
-    const handleCanPlay = () => setIsLoading(false);
+    const handleLoadStart = () => {
+      console.log("Audio load started");
+      setIsLoading(true);
+    };
+    
+    const handleCanPlay = () => {
+      console.log("Audio can play");
+      setIsLoading(false);
+    };
+    
     const handleEnded = () => {
+      console.log("Audio ended");
       setIsPlaying(false);
       setCurrentTime(0);
+    };
+
+    const handleError = (e: Event) => {
+      console.error("Audio loading error:", e);
+      setIsLoading(false);
     };
 
     audio.addEventListener("loadstart", handleLoadStart);
@@ -41,6 +58,10 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
     audio.addEventListener("loadeddata", setAudioData);
     audio.addEventListener("timeupdate", setAudioTime);
     audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("error", handleError);
+
+    // Force reload when audioSrc changes
+    audio.load();
 
     return () => {
       audio.removeEventListener("loadstart", handleLoadStart);
@@ -48,17 +69,23 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
       audio.removeEventListener("loadeddata", setAudioData);
       audio.removeEventListener("timeupdate", setAudioTime);
       audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("error", handleError);
     };
-  }, []);
+  }, [audioSrc]);
 
   const togglePlay = async () => {
     const audio = audioRef.current;
-    if (!audio || !audioSrc) return;
+    if (!audio || !audioSrc) {
+      console.log("No audio element or source");
+      return;
+    }
 
     if (isPlaying) {
+      console.log("Pausing audio");
       audio.pause();
       setIsPlaying(false);
     } else {
+      console.log("Playing audio");
       setIsLoading(true);
       
       // Pause all other audio elements
@@ -71,6 +98,7 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
       try {
         await audio.play();
         setIsPlaying(true);
+        setIsLoading(false);
       } catch (error) {
         console.error("Error playing audio:", error);
         setIsLoading(false);
@@ -122,7 +150,12 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
 
   return (
     <div className={`audio-player ${small ? 'audio-player-small' : ''}`}>
-      <audio ref={audioRef} src={audioSrc} preload="metadata" />
+      <audio 
+        ref={audioRef} 
+        src={audioSrc} 
+        preload="metadata"
+        crossOrigin="anonymous"
+      />
       <div className="d-flex align-items-center gap-2">
         <button 
           onClick={togglePlay} 
