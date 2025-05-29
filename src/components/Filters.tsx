@@ -1,13 +1,14 @@
 
 import { useState } from "react";
-import { genres } from "../data/samplePacks";
 import { Filter } from "lucide-react";
+import { useGenres } from "@/hooks/useGenres";
 
 interface FiltersProps {
   onFilterChange: (genre: string, minBpm: number, maxBpm: number) => void;
 }
 
 const Filters = ({ onFilterChange }: FiltersProps) => {
+  const { data: genres = ["All"], isLoading: genresLoading } = useGenres();
   const [selectedGenre, setSelectedGenre] = useState("All");
   const [bpmRange, setBpmRange] = useState({ min: 80, max: 180 });
   const [isFiltersVisible, setIsFiltersVisible] = useState(false);
@@ -24,7 +25,6 @@ const Filters = ({ onFilterChange }: FiltersProps) => {
   };
 
   const handleBpmScroll = (type: "min" | "max", event: React.WheelEvent) => {
-    // Prevent any scroll behavior
     event.preventDefault();
     event.stopPropagation();
     
@@ -32,7 +32,6 @@ const Filters = ({ onFilterChange }: FiltersProps) => {
     const currentValue = bpmRange[type];
     let newValue = currentValue + delta;
     
-    // Apply constraints
     if (type === "min") {
       newValue = Math.max(70, Math.min(newValue, bpmRange.max));
     } else {
@@ -64,19 +63,23 @@ const Filters = ({ onFilterChange }: FiltersProps) => {
       <div className={`${isFiltersVisible ? 'd-block' : 'd-none d-md-block'}`}>
         <div className="mb-3">
           <label className="form-label">Genre</label>
-          <div className="d-flex flex-wrap gap-2">
-            {genres.map((genre) => (
-              <button
-                key={genre}
-                className={`btn btn-sm animated-btn ${
-                  selectedGenre === genre ? "btn-primary" : "btn-outline-secondary"
-                }`}
-                onClick={() => handleGenreChange(genre)}
-              >
-                {genre}
-              </button>
-            ))}
-          </div>
+          {genresLoading ? (
+            <div className="text-muted">Loading genres...</div>
+          ) : (
+            <div className="d-flex flex-wrap gap-2">
+              {genres.map((genre) => (
+                <button
+                  key={genre}
+                  className={`btn btn-sm animated-btn ${
+                    selectedGenre === genre ? "btn-primary" : "btn-outline-secondary"
+                  }`}
+                  onClick={() => handleGenreChange(genre)}
+                >
+                  {genre}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="mb-3">

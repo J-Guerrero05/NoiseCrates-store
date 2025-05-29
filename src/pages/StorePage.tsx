@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from "react";
-import { samplePacks } from "@/data/samplePacks";
 import SamplePackCard from "@/components/SamplePackCard";
 import Filters from "@/components/Filters";
 import { SamplePack } from "@/types/types";
@@ -8,16 +7,17 @@ import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useSamplePacks } from "@/hooks/useSamplePacks";
 
 const StorePage = () => {
-  const [filteredPacks, setFilteredPacks] = useState<SamplePack[]>(samplePacks);
+  const { data: samplePacks = [], isLoading, error } = useSamplePacks();
+  const [filteredPacks, setFilteredPacks] = useState<SamplePack[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const { addToCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleSearch = (query: string) => {
-    // Filter by name only, as requested
     setSearchQuery(query);
     
     if (query) {
@@ -42,7 +42,6 @@ const StorePage = () => {
       (pack) => pack.bpm >= minBpm && pack.bpm <= maxBpm
     );
 
-    // Apply name search if present
     if (searchQuery) {
       const lowercaseQuery = searchQuery.toLowerCase();
       filtered = filtered.filter(pack => 
@@ -54,9 +53,10 @@ const StorePage = () => {
   };
 
   useEffect(() => {
-    handleFilterChange("All", 80, 180);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (samplePacks.length > 0) {
+      handleFilterChange("All", 80, 180);
+    }
+  }, [samplePacks]);
 
   const handleAddToCart = (pack: SamplePack) => {
     if (!user) {
@@ -66,6 +66,29 @@ const StorePage = () => {
     }
     addToCart(pack);
   };
+
+  if (isLoading) {
+    return (
+      <div className="container mb-5">
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "400px" }}>
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mb-5">
+        <div className="alert alert-danger" role="alert">
+          <h4 className="alert-heading">Error Loading Sample Packs</h4>
+          <p>We encountered an error while loading the sample packs. Please try refreshing the page.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mb-5">
@@ -84,26 +107,7 @@ const StorePage = () => {
             <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
               {filteredPacks.map((pack) => (
                 <div key={pack.id} className="col">
-                  <div className="card h-100">
-                    <img src={pack.imageUrl} className="card-img-top" alt={pack.title} style={{height: "180px", objectFit: "cover"}} />
-                    <div className="card-body d-flex flex-column">
-                      <h5 className="card-title">{pack.title}</h5>
-                      <div className="d-flex mb-2">
-                        <span className="badge bg-secondary me-2">{pack.genre}</span>
-                        <span className="badge bg-info">{pack.bpm} BPM</span>
-                      </div>
-                      <p className="card-text flex-grow-1">{pack.description}</p>
-                      <div className="d-flex justify-content-between align-items-center mt-auto">
-                        <span className="fs-5">${pack.price.toFixed(2)}</span>
-                        <button 
-                          className="btn btn-primary" 
-                          onClick={() => handleAddToCart(pack)}
-                        >
-                          Add to Cart
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  <SamplePackCard samplePack={pack} />
                 </div>
               ))}
             </div>

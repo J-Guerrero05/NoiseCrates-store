@@ -54,6 +54,45 @@ export type Database = {
         }
         Relationships: []
       }
+      sample_packs: {
+        Row: {
+          bpm: number
+          created_at: string
+          description: string | null
+          genre: string
+          id: string
+          image_url: string | null
+          preview_url: string | null
+          price: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          bpm: number
+          created_at?: string
+          description?: string | null
+          genre: string
+          id?: string
+          image_url?: string | null
+          preview_url?: string | null
+          price: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          bpm?: number
+          created_at?: string
+          description?: string | null
+          genre?: string
+          id?: string
+          image_url?: string | null
+          preview_url?: string | null
+          price?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
