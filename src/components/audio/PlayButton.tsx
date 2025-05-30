@@ -1,5 +1,5 @@
 
-import { Play, Pause } from "lucide-react";
+import { Play, Pause, AlertCircle } from "lucide-react";
 
 interface PlayButtonProps {
   isPlaying: boolean;
@@ -16,8 +16,21 @@ const PlayButton = ({
   hasError, 
   small = false, 
   onClick, 
-  disabled 
+  disabled = false
 }: PlayButtonProps) => {
+  const getButtonColor = () => {
+    if (hasError) return '#dc3545';
+    if (disabled) return '#6c757d';
+    return '#6c5ce7';
+  };
+
+  const getButtonTitle = () => {
+    if (hasError) return "Audio unavailable";
+    if (disabled) return "No audio available";
+    if (isLoading) return "Loading...";
+    return isPlaying ? "Pause" : "Play";
+  };
+
   return (
     <button 
       onClick={onClick} 
@@ -25,11 +38,12 @@ const PlayButton = ({
       style={{ 
         width: small ? '30px' : '40px', 
         height: small ? '30px' : '40px',
-        backgroundColor: hasError ? '#dc3545' : '#6c5ce7',
-        color: 'white'
+        backgroundColor: getButtonColor(),
+        color: 'white',
+        border: 'none'
       }}
       disabled={disabled || isLoading}
-      title={hasError ? "Audio unavailable" : ""}
+      title={getButtonTitle()}
     >
       {isLoading ? (
         <div 
@@ -40,7 +54,7 @@ const PlayButton = ({
           <span className="visually-hidden">Loading...</span>
         </div>
       ) : hasError ? (
-        <span style={{ fontSize: small ? '10px' : '12px' }}>✕</span>
+        <AlertCircle size={small ? 12 : 16} />
       ) : isPlaying ? (
         <Pause size={small ? 14 : 18} />
       ) : (

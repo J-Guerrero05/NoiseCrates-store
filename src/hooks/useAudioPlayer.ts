@@ -20,17 +20,18 @@ export const useAudioPlayer = ({ audioSrc }: UseAudioPlayerOptions) => {
     console.log("Loading audio:", audioSrc);
     setHasError(false);
     setIsLoading(true);
+    setIsPlaying(false);
 
     const setAudioData = () => {
       console.log("Audio loaded, duration:", audio.duration);
-      setDuration(audio.duration);
-      setCurrentTime(audio.currentTime);
+      setDuration(audio.duration || 0);
+      setCurrentTime(audio.currentTime || 0);
       setIsLoading(false);
       setHasError(false);
     };
 
     const setAudioTime = () => {
-      const currTime = audio.currentTime;
+      const currTime = audio.currentTime || 0;
       setCurrentTime(currTime);
     };
 
@@ -57,6 +58,7 @@ export const useAudioPlayer = ({ audioSrc }: UseAudioPlayerOptions) => {
       console.error("Audio src:", audioSrc);
       setIsLoading(false);
       setHasError(true);
+      setIsPlaying(false);
     };
 
     const handleLoadedMetadata = () => {
@@ -65,10 +67,24 @@ export const useAudioPlayer = ({ audioSrc }: UseAudioPlayerOptions) => {
     };
 
     const handlePause = () => setIsPlaying(false);
+    const handlePlay = () => setIsPlaying(true);
 
-    // Set crossOrigin to anonymous to handle CORS
+    // Clean up any previous event listeners
+    audio.removeEventListener("loadstart", handleLoadStart);
+    audio.removeEventListener("canplay", handleCanPlay);
+    audio.removeEventListener("loadeddata", setAudioData);
+    audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+    audio.removeEventListener("timeupdate", setAudioTime);
+    audio.removeEventListener("ended", handleEnded);
+    audio.removeEventListener("error", handleError);
+    audio.removeEventListener("pause", handlePause);
+    audio.removeEventListener("play", handlePlay);
+
+    // Set up audio element
     audio.crossOrigin = "anonymous";
+    audio.preload = "metadata";
 
+    // Add event listeners
     audio.addEventListener("loadstart", handleLoadStart);
     audio.addEventListener("canplay", handleCanPlay);
     audio.addEventListener("loadeddata", setAudioData);
@@ -77,7 +93,9 @@ export const useAudioPlayer = ({ audioSrc }: UseAudioPlayerOptions) => {
     audio.addEventListener("ended", handleEnded);
     audio.addEventListener("error", handleError);
     audio.addEventListener("pause", handlePause);
+    audio.addEventListener("play", handlePlay);
 
+    // Load the audio
     audio.load();
 
     return () => {
@@ -89,6 +107,7 @@ export const useAudioPlayer = ({ audioSrc }: UseAudioPlayerOptions) => {
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", handleError);
       audio.removeEventListener("pause", handlePause);
+      audio.removeEventListener("play", handlePlay);
     };
   }, [audioSrc]);
 
@@ -102,12 +121,11 @@ export const useAudioPlayer = ({ audioSrc }: UseAudioPlayerOptions) => {
     if (isPlaying) {
       console.log("Pausing audio");
       audio.pause();
-      setIsPlaying(false);
     } else {
       console.log("Attempting to play audio");
       setIsLoading(true);
       
-      // Stop all other audio players
+      // Stop all other audio players first
       document.querySelectorAll("audio").forEach((el) => {
         if (el !== audio && !el.paused) {
           el.pause();
@@ -116,7 +134,6 @@ export const useAudioPlayer = ({ audioSrc }: UseAudioPlayerOptions) => {
 
       try {
         await audio.play();
-        setIsPlaying(true);
         setIsLoading(false);
       } catch (error) {
         console.error("Error playing audio:", error);

@@ -26,7 +26,7 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
         <PlayButton
           isPlaying={false}
           isLoading={false}
-          hasError={false}
+          hasError={true}
           small={small}
           onClick={() => {}}
           disabled={true}
@@ -42,6 +42,7 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
         src={audioSrc} 
         preload="metadata"
         crossOrigin="anonymous"
+        style={{ display: 'none' }}
       />
       <div className="d-flex align-items-center gap-2">
         <PlayButton
@@ -50,13 +51,14 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
           hasError={hasError}
           small={small}
           onClick={togglePlay}
+          disabled={hasError && !isLoading}
         />
         
-        {!small && (
+        {!small && !hasError && (
           <ProgressBar currentTime={currentTime} duration={duration} />
         )}
         
-        {!small && (
+        {!small && !hasError && (
           <TimeDisplay currentTime={currentTime} duration={duration} />
         )}
       </div>
