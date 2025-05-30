@@ -1,62 +1,21 @@
 
-import { useState, useEffect } from "react";
 import SamplePackCard from "@/components/SamplePackCard";
 import Filters from "@/components/Filters";
+import SearchBar from "@/components/search/SearchBar";
 import { SamplePack } from "@/types/types";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useSamplePacks } from "@/hooks/useSamplePacks";
+import { useStoreFilters } from "@/hooks/useStoreFilters";
 
 const StorePage = () => {
   const { data: samplePacks = [], isLoading, error } = useSamplePacks();
-  const [filteredPacks, setFilteredPacks] = useState<SamplePack[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const { filteredPacks, handleSearch, handleFilterChange } = useStoreFilters({ samplePacks });
   const { addToCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    
-    if (query) {
-      const lowercaseQuery = query.toLowerCase();
-      const filtered = samplePacks.filter(pack => 
-        pack.title.toLowerCase().includes(lowercaseQuery)
-      );
-      setFilteredPacks(filtered);
-    } else {
-      handleFilterChange("All", 80, 180);
-    }
-  };
-
-  const handleFilterChange = (genre: string, minBpm: number, maxBpm: number) => {
-    let filtered = samplePacks;
-
-    if (genre !== "All") {
-      filtered = filtered.filter((pack) => pack.genre === genre);
-    }
-
-    filtered = filtered.filter(
-      (pack) => pack.bpm >= minBpm && pack.bpm <= maxBpm
-    );
-
-    if (searchQuery) {
-      const lowercaseQuery = searchQuery.toLowerCase();
-      filtered = filtered.filter(pack => 
-        pack.title.toLowerCase().includes(lowercaseQuery)
-      );
-    }
-
-    setFilteredPacks(filtered);
-  };
-
-  useEffect(() => {
-    if (samplePacks.length > 0) {
-      handleFilterChange("All", 80, 180);
-    }
-  }, [samplePacks]);
 
   const handleAddToCart = (pack: SamplePack) => {
     if (!user) {
@@ -93,6 +52,7 @@ const StorePage = () => {
   return (
     <div className="container mb-5">
       <h1 className="mb-4">Sample Packs</h1>
+      <SearchBar onSearch={handleSearch} />
       <div className="row">
         <div className="col-md-3">
           <Filters onFilterChange={handleFilterChange} />
