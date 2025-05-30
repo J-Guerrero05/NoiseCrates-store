@@ -12,6 +12,7 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -19,12 +20,15 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
     if (!audio || !audioSrc) return;
 
     console.log("Loading audio:", audioSrc);
+    setHasError(false);
+    setIsLoading(true);
 
     const setAudioData = () => {
       console.log("Audio loaded, duration:", audio.duration);
       setDuration(audio.duration);
       setCurrentTime(audio.currentTime);
       setIsLoading(false);
+      setHasError(false);
     };
 
     const setAudioTime = () => {
@@ -35,11 +39,13 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
     const handleLoadStart = () => {
       console.log("Audio load started");
       setIsLoading(true);
+      setHasError(false);
     };
     
     const handleCanPlay = () => {
       console.log("Audio can play");
       setIsLoading(false);
+      setHasError(false);
     };
     
     const handleEnded = () => {
@@ -50,12 +56,22 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
 
     const handleError = (e: Event) => {
       console.error("Audio loading error:", e);
+      console.error("Audio src:", audioSrc);
+      console.error("Audio readyState:", audio.readyState);
+      console.error("Audio networkState:", audio.networkState);
+      setIsLoading(false);
+      setHasError(true);
+    };
+
+    const handleLoadedMetadata = () => {
+      console.log("Audio metadata loaded");
       setIsLoading(false);
     };
 
     audio.addEventListener("loadstart", handleLoadStart);
     audio.addEventListener("canplay", handleCanPlay);
     audio.addEventListener("loadeddata", setAudioData);
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
     audio.addEventListener("timeupdate", setAudioTime);
     audio.addEventListener("ended", handleEnded);
     audio.addEventListener("error", handleError);
@@ -67,6 +83,7 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
       audio.removeEventListener("loadstart", handleLoadStart);
       audio.removeEventListener("canplay", handleCanPlay);
       audio.removeEventListener("loadeddata", setAudioData);
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("timeupdate", setAudioTime);
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", handleError);
@@ -75,8 +92,8 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
 
   const togglePlay = async () => {
     const audio = audioRef.current;
-    if (!audio || !audioSrc) {
-      console.log("No audio element or source");
+    if (!audio || !audioSrc || hasError) {
+      console.log("Cannot play: no audio element, source, or has error");
       return;
     }
 
@@ -85,7 +102,7 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
       audio.pause();
       setIsPlaying(false);
     } else {
-      console.log("Playing audio");
+      console.log("Attempting to play audio");
       setIsLoading(true);
       
       // Pause all other audio elements
@@ -96,12 +113,30 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
       });
 
       try {
-        await audio.play();
-        setIsPlaying(true);
-        setIsLoading(false);
+        // Check if audio is ready before playing
+        if (audio.readyState >= 2) { // HAVE_CURRENT_DATA or higher
+          await audio.play();
+          setIsPlaying(true);
+          setIsLoading(false);
+        } else {
+          // Wait for audio to be ready
+          const handleCanPlay = () => {
+            audio.removeEventListener("canplay", handleCanPlay);
+            audio.play().then(() => {
+              setIsPlaying(true);
+              setIsLoading(false);
+            }).catch((error) => {
+              console.error("Error playing audio after canplay:", error);
+              setIsLoading(false);
+              setHasError(true);
+            });
+          };
+          audio.addEventListener("canplay", handleCanPlay);
+        }
       } catch (error) {
         console.error("Error playing audio:", error);
         setIsLoading(false);
+        setHasError(true);
       }
     }
   };
@@ -163,10 +198,11 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
           style={{ 
             width: small ? '30px' : '40px', 
             height: small ? '30px' : '40px',
-            backgroundColor: '#6c5ce7',
+            backgroundColor: hasError ? '#dc3545' : '#6c5ce7',
             color: 'white'
           }}
-          disabled={isLoading}
+          disabled={isLoading || hasError}
+          title={hasError ? "Audio unavailable" : ""}
         >
           {isLoading ? (
             <div 
@@ -176,6 +212,8 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
             >
               <span className="visually-hidden">Loading...</span>
             </div>
+          ) : hasError ? (
+            <span style={{ fontSize: small ? '10px' : '12px' }}>✕</span>
           ) : isPlaying ? (
             <Pause size={small ? 14 : 18} />
           ) : (
