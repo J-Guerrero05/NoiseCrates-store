@@ -28,25 +28,19 @@ body {
   padding: 25px 0;
 }
 
-/* Toast positioning fix - ensure toasts appear in the viewport */
-.toast-container,
+/* Toast positioning fix - ensure toasts appear properly in viewport */
 [data-sonner-toaster] {
   position: fixed !important;
-  top: 20px !important;
+  top: 80px !important;
   right: 20px !important;
   z-index: 9999 !important;
   max-width: 400px !important;
   width: auto !important;
-  pointer-events: none;
+  pointer-events: none !important;
 }
 
-.toast-container * {
-  pointer-events: auto;
-}
-
-/* Ensure toasts don't overlap with navbar */
-[data-sonner-toaster] {
-  margin-top: 60px !important;
+[data-sonner-toaster] * {
+  pointer-events: auto !important;
 }
 
 /* Override any conflicting toast styles */
@@ -55,6 +49,7 @@ body {
   right: 0 !important;
   transform: none !important;
   margin-bottom: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
 /* Compact button styles for header */

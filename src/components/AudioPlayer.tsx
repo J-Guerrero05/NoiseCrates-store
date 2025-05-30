@@ -57,8 +57,6 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
     const handleError = (e: Event) => {
       console.error("Audio loading error:", e);
       console.error("Audio src:", audioSrc);
-      console.error("Audio readyState:", audio.readyState);
-      console.error("Audio networkState:", audio.networkState);
       setIsLoading(false);
       setHasError(true);
     };
@@ -113,26 +111,9 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
       });
 
       try {
-        // Check if audio is ready before playing
-        if (audio.readyState >= 2) { // HAVE_CURRENT_DATA or higher
-          await audio.play();
-          setIsPlaying(true);
-          setIsLoading(false);
-        } else {
-          // Wait for audio to be ready
-          const handleCanPlay = () => {
-            audio.removeEventListener("canplay", handleCanPlay);
-            audio.play().then(() => {
-              setIsPlaying(true);
-              setIsLoading(false);
-            }).catch((error) => {
-              console.error("Error playing audio after canplay:", error);
-              setIsLoading(false);
-              setHasError(true);
-            });
-          };
-          audio.addEventListener("canplay", handleCanPlay);
-        }
+        await audio.play();
+        setIsPlaying(true);
+        setIsLoading(false);
       } catch (error) {
         console.error("Error playing audio:", error);
         setIsLoading(false);
@@ -189,7 +170,6 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
         ref={audioRef} 
         src={audioSrc} 
         preload="metadata"
-        crossOrigin="anonymous"
       />
       <div className="d-flex align-items-center gap-2">
         <button 
@@ -201,7 +181,7 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
             backgroundColor: hasError ? '#dc3545' : '#6c5ce7',
             color: 'white'
           }}
-          disabled={isLoading || hasError}
+          disabled={isLoading}
           title={hasError ? "Audio unavailable" : ""}
         >
           {isLoading ? (
