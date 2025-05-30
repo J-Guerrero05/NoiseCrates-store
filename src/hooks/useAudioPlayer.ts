@@ -66,6 +66,9 @@ export const useAudioPlayer = ({ audioSrc }: UseAudioPlayerOptions) => {
 
     const handlePause = () => setIsPlaying(false);
 
+    // Set crossOrigin to anonymous to handle CORS
+    audio.crossOrigin = "anonymous";
+
     audio.addEventListener("loadstart", handleLoadStart);
     audio.addEventListener("canplay", handleCanPlay);
     audio.addEventListener("loadeddata", setAudioData);
@@ -104,6 +107,7 @@ export const useAudioPlayer = ({ audioSrc }: UseAudioPlayerOptions) => {
       console.log("Attempting to play audio");
       setIsLoading(true);
       
+      // Stop all other audio players
       document.querySelectorAll("audio").forEach((el) => {
         if (el !== audio && !el.paused) {
           el.pause();

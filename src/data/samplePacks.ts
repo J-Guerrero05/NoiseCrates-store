@@ -10,7 +10,7 @@ export const samplePacks: SamplePack[] = [
     bpm: 124,
     price: 39.99,
     imageUrl: "https://images.unsplash.com/photo-1531297484001-80022131f5a1",
-    previewUrl: "https://assets.mixkit.co/music/preview/mixkit-tech-house-vibes-130.mp3",
+    previewUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3",
     createdAt: "2023-10-15",
   },
   {
@@ -21,7 +21,7 @@ export const samplePacks: SamplePack[] = [
     bpm: 140,
     price: 29.99,
     imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-    previewUrl: "https://assets.mixkit.co/music/preview/mixkit-futuristic-electronica-127.mp3",
+    previewUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-01.mp3",
     createdAt: "2023-11-03",
   },
   {
@@ -32,7 +32,7 @@ export const samplePacks: SamplePack[] = [
     bpm: 140,
     price: 24.99,
     imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
-    previewUrl: "https://assets.mixkit.co/music/preview/mixkit-hip-hop-02-621.mp3",
+    previewUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-02.mp3",
     createdAt: "2023-12-01",
   },
   {
@@ -43,7 +43,7 @@ export const samplePacks: SamplePack[] = [
     bpm: 90,
     price: 19.99,
     imageUrl: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-    previewUrl: "https://assets.mixkit.co/music/preview/mixkit-hip-hop-03-738.mp3",
+    previewUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-03.mp3",
     createdAt: "2024-01-15",
   },
   {
@@ -54,7 +54,7 @@ export const samplePacks: SamplePack[] = [
     bpm: 80,
     price: 34.99,
     imageUrl: "https://images.unsplash.com/photo-1531297484001-80022131f5a1",
-    previewUrl: "https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3",
+    previewUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-04.mp3",
     createdAt: "2024-02-10",
   },
   {
@@ -65,7 +65,7 @@ export const samplePacks: SamplePack[] = [
     bpm: 128,
     price: 44.99,
     imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-    previewUrl: "https://assets.mixkit.co/music/preview/mixkit-pop-rock-drums-and-bass-671.mp3",
+    previewUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-06.mp3",
     createdAt: "2024-03-05",
   },
   {
@@ -76,7 +76,7 @@ export const samplePacks: SamplePack[] = [
     bpm: 174,
     price: 27.99,
     imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
-    previewUrl: "https://assets.mixkit.co/music/preview/mixkit-driving-ambience-181.mp3",
+    previewUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-07.mp3",
     createdAt: "2024-04-12",
   },
   {
@@ -87,7 +87,7 @@ export const samplePacks: SamplePack[] = [
     bpm: 150,
     price: 32.99,
     imageUrl: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-    previewUrl: "https://assets.mixkit.co/music/preview/mixkit-space-game-668.mp3",
+    previewUrl: "https://www.soundjay.com/misc/sounds/bell-ringing-08.mp3",
     createdAt: "2024-04-28",
   },
 ];
