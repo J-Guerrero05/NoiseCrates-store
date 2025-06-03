@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { SamplePack } from "@/types/types";
 import { toast } from "sonner";
-import { samplePacks } from "@/data/samplePacks";
 import ChangePassword from "@/components/ChangePassword";
 
 interface Profile {
@@ -15,7 +14,7 @@ interface Profile {
 const Profile = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [purchasedPacks, setPurchasedPacks] = useState<SamplePack[]>([]);
+  const [purchasedPacks, setPurchasedPacks] = useState<(SamplePack & { purchasedAt: string })[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -51,20 +50,39 @@ const Profile = () => {
       try {
         const { data, error } = await supabase
           .from("purchased_packs")
-          .select("pack_id, purchased_at")
+          .select("purchased_at, sample_packs(*)")
           .eq("user_id", user.id)
           .order("purchased_at", { ascending: false });
 
         if (error) throw error;
 
-        // Match purchased pack IDs with the sample pack data
-        const purchased = data.map(purchase => {
-          const pack = samplePacks.find(p => p.id === purchase.pack_id);
-          return pack ? { 
-            ...pack, 
-            purchasedAt: purchase.purchased_at 
-          } : null;
-        }).filter(Boolean) as SamplePack[];
+        // Define the type for the joined row
+        interface PurchasedPackRow {
+          purchased_at: string;
+          sample_packs: SamplePack & {
+            image_url: string;
+            preview_url: string;
+            created_at: string;
+          };
+        }
+
+        // Map the joined sample_packs data, handling possible join errors
+        const purchased = Array.isArray(data)
+          ? (data as unknown as PurchasedPackRow[])
+              .filter(
+                (row) =>
+                  row.sample_packs &&
+                  typeof row.sample_packs === "object" &&
+                  !("error" in row.sample_packs)
+              )
+              .map((row) => ({
+                ...row.sample_packs,
+                imageUrl: row.sample_packs.image_url,
+                previewUrl: row.sample_packs.preview_url,
+                createdAt: row.sample_packs.created_at,
+                purchasedAt: row.purchased_at
+              }))
+          : [];
 
         setPurchasedPacks(purchased);
       } catch (error) {

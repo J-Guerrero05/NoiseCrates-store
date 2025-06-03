@@ -3,7 +3,6 @@ import { useState } from "react";
 import { SamplePack } from "@/types/types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { convertYouTubeToAudioUrl, isYouTubeUrl } from "@/utils/youtubeProcessor";
 import {
   Dialog,
   DialogContent,
@@ -50,56 +49,44 @@ const EditSamplePackModal = ({ pack, isOpen, onClose, onSave }: EditSamplePackMo
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    try {
-      let processedPreviewUrl = formData.preview_url;
-      
-      // Process YouTube URL if detected
-      if (isYouTubeUrl(formData.preview_url)) {
-        try {
-          processedPreviewUrl = convertYouTubeToAudioUrl(formData.preview_url);
-          toast.info("YouTube URL detected - processing for audio playback");
-        } catch (error) {
-          toast.error("Invalid YouTube URL format");
-          setIsSubmitting(false);
-          return;
-        }
-      }
+  try {
 
-      const { error } = await supabase
-        .from('sample_packs')
-        .update({
-          title: formData.title,
-          description: formData.description,
-          genre: formData.genre,
-          bpm: parseInt(formData.bpm),
-          price: parseFloat(formData.price),
-          image_url: formData.image_url,
-          preview_url: processedPreviewUrl,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', pack.id);
+    const { error } = await supabase
+      .from('sample_packs')
+      .update({
+        title: formData.title,
+        description: formData.description,
+        genre: formData.genre,
+        bpm: parseInt(formData.bpm),
+        price: parseFloat(formData.price),
+        image_url: formData.image_url,
+        preview_url: formData.preview_url,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', pack.id);
 
-      if (error) {
-        console.error('Error updating sample pack:', error);
-        toast.error('Failed to update sample pack');
-        return;
-      }
-
-      toast.success('Sample pack updated successfully!');
-      onSave();
-      onClose();
-
-    } catch (error) {
+    if (error) {
       console.error('Error updating sample pack:', error);
       toast.error('Failed to update sample pack');
-    } finally {
-      setIsSubmitting(false);
+      return;
     }
-  };
+
+    toast.success('Sample pack updated successfully!');
+    onSave();
+    onClose();
+
+  } catch (error) {
+    console.error('Error updating sample pack:', error);
+    toast.error('Failed to update sample pack');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -206,11 +193,6 @@ const EditSamplePackModal = ({ pack, isOpen, onClose, onSave }: EditSamplePackMo
                 onChange={handlePreviewUrlChange}
                 placeholder="https://youtube.com/watch?v=... or direct audio URL"
               />
-              {isYouTubeUrl(formData.preview_url) && (
-                <p className="text-sm text-blue-600 mt-1">
-                  YouTube URL detected - will be processed for audio playback
-                </p>
-              )}
             </div>
 
             <div className="flex gap-2 pt-4 sticky bottom-0 bg-white border-t mt-6 -mx-2 px-2 py-4">

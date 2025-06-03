@@ -6,7 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useSamplePacks } from "@/hooks/useSamplePacks";
 import { useQueryClient } from "@tanstack/react-query";
-import { convertYouTubeToAudioUrl, isYouTubeUrl } from "@/utils/youtubeProcessor";
 import EditSamplePackModal from "@/components/admin/EditSamplePackModal";
 import { SamplePack } from "@/types/types";
 
@@ -79,19 +78,7 @@ const Admin = () => {
     setIsSubmitting(true);
 
     try {
-      let processedPreviewUrl = formData.preview_url;
       
-      // Process YouTube URL if detected
-      if (isYouTubeUrl(formData.preview_url)) {
-        try {
-          processedPreviewUrl = convertYouTubeToAudioUrl(formData.preview_url);
-          toast.info("YouTube URL detected - processing for audio playback");
-        } catch (error) {
-          toast.error("Invalid YouTube URL format");
-          setIsSubmitting(false);
-          return;
-        }
-      }
 
       const { error } = await supabase
         .from('sample_packs')
@@ -102,7 +89,7 @@ const Admin = () => {
           bpm: parseInt(formData.bpm),
           price: parseFloat(formData.price),
           image_url: formData.image_url,
-          preview_url: processedPreviewUrl
+          preview_url: formData.preview_url,
         });
 
       if (error) {
@@ -283,13 +270,8 @@ const Admin = () => {
                     name="preview_url"
                     value={formData.preview_url}
                     onChange={handlePreviewUrlChange}
-                    placeholder="https://youtube.com/watch?v=... or direct audio URL"
+                    placeholder="Flie name"
                   />
-                  {isYouTubeUrl(formData.preview_url) && (
-                    <div className="form-text text-primary">
-                      YouTube URL detected - will be processed for audio playback
-                    </div>
-                  )}
                 </div>
 
                 <button

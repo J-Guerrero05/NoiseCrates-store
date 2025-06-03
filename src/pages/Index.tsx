@@ -1,19 +1,79 @@
 import { useState, useEffect } from "react";
-import { samplePacks, purchasedPacks } from "../data/samplePacks";
 import Navbar from "../components/Navbar";
 import SamplePackCard from "../components/SamplePackCard";
 import Filters from "../components/Filters";
 import MyPurchases from "../components/MyPurchases";
 import { SamplePack, User } from "../types/types";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "../integrations/supabase/client";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
+// Utilidad para mapear snake_case a camelCase
+function mapSamplePack(item: Record<string, unknown>): SamplePack {
+  return {
+    id: item.id as string,
+    title: item.title as string,
+    description: item.description as string,
+    genre: item.genre as string,
+    bpm: item.bpm as number,
+    price: item.price as number,
+    imageUrl: item.image_url as string,
+    previewUrl: item.preview_url as string,
+    createdAt: item.created_at as string,
+  };
+}
+
 const Index = () => {
-  const [filteredPacks, setFilteredPacks] = useState<SamplePack[]>(samplePacks);
+  const [samplePacks, setSamplePacks] = useState<SamplePack[]>([]);
+  const [filteredPacks, setFilteredPacks] = useState<SamplePack[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showPurchased, setShowPurchased] = useState(false);
+  const [purchasedPacks, setPurchasedPacks] = useState<SamplePack[]>([]);
   const { user } = useAuth();
+
+  // Cargar sample packs desde la base de datos al montar
+  useEffect(() => {
+    const fetchSamplePacks = async () => {
+      const { data, error } = await supabase
+        .from('sample_packs')
+        .select('*');
+      if (error) {
+        console.error("Error fetching sample packs:", error);
+      } else {
+        const mappedData = (data ?? []).map((item: Record<string, unknown>) => mapSamplePack(item));
+        setSamplePacks(mappedData);
+        setFilteredPacks(mappedData);
+      }
+    };
+    fetchSamplePacks();
+  }, []);
+
+  // Cargar sample packs comprados por el usuario
+  useEffect(() => {
+    const fetchPurchasedPacks = async () => {
+      if (!user) {
+        setPurchasedPacks([]);
+        return;
+      }
+      // Fetch purchased pack IDs and filter from samplePacks in memory
+      const { data, error } = await supabase
+        .from('purchased_packs')
+        .select('pack_id')
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error("Error fetching purchased packs:", error);
+        setPurchasedPacks([]);
+      } else {
+        // data is an array of { pack_id: string }
+        const purchasedIds = (data ?? []).map((row: { pack_id: string }) => row.pack_id);
+        const packs = samplePacks.filter(pack => purchasedIds.includes(pack.id));
+        setPurchasedPacks(packs);
+      }
+    };
+    fetchPurchasedPacks();
+  }, [user]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -43,11 +103,11 @@ const Index = () => {
     setFilteredPacks(filtered);
   };
 
-  // Apply search filter whenever search query changes
+  // Aplica el filtro cada vez que cambia la búsqueda o los sample packs
   useEffect(() => {
     handleFilterChange("All", 80, 180);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery]);
+  }, [searchQuery, samplePacks]);
 
   return (
     <div className="bg-light min-vh-100">
@@ -89,7 +149,7 @@ const Index = () => {
           <div className="row">
             <div className="col-md-6">
               <h5 className="mb-3">
-                <span className="text-primary">Sample</span>Market
+                <span className="text-primary">Noise</span>Crate
               </h5>
               <p className="small text-muted">
                 The best marketplace for music producers to find high-quality sample packs.
@@ -122,7 +182,7 @@ const Index = () => {
           </div>
           <hr className="my-3" />
           <div className="d-flex justify-content-between">
-            <p className="small text-muted">&copy; 2025 SampleMarket. All rights reserved.</p>
+            <p className="small text-muted">&copy; 2025 NoiseCrate. All rights reserved.</p>
           </div>
         </div>
       </footer>
