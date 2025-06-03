@@ -6,6 +6,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useSamplePacks } from "@/hooks/useSamplePacks";
 import { useQueryClient } from "@tanstack/react-query";
+import { convertYouTubeToAudioUrl, isYouTubeUrl } from "@/utils/youtubeProcessor";
+import EditSamplePackModal from "@/components/admin/EditSamplePackModal";
+import { SamplePack } from "@/types/types";
 
 const Admin = () => {
   const { user } = useAuth();
@@ -25,6 +28,7 @@ const Admin = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingPack, setEditingPack] = useState<SamplePack | null>(null);
 
   if (!user) {
     navigate("/login");
@@ -62,11 +66,33 @@ const Admin = () => {
     }));
   };
 
+  const handlePreviewUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const url = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      preview_url: url
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
+      let processedPreviewUrl = formData.preview_url;
+      
+      // Process YouTube URL if detected
+      if (isYouTubeUrl(formData.preview_url)) {
+        try {
+          processedPreviewUrl = convertYouTubeToAudioUrl(formData.preview_url);
+          toast.info("YouTube URL detected - processing for audio playback");
+        } catch (error) {
+          toast.error("Invalid YouTube URL format");
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       const { error } = await supabase
         .from('sample_packs')
         .insert({
@@ -76,7 +102,7 @@ const Admin = () => {
           bpm: parseInt(formData.bpm),
           price: parseFloat(formData.price),
           image_url: formData.image_url,
-          preview_url: formData.preview_url
+          preview_url: processedPreviewUrl
         });
 
       if (error) {
@@ -135,6 +161,11 @@ const Admin = () => {
       console.error('Error deleting sample pack:', error);
       toast.error('Failed to delete sample pack');
     }
+  };
+
+  const handleEditSave = () => {
+    queryClient.invalidateQueries({ queryKey: ['samplePacks'] });
+    queryClient.invalidateQueries({ queryKey: ['genres'] });
   };
 
   return (
@@ -244,15 +275,21 @@ const Admin = () => {
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="preview_url" className="form-label">Preview Audio URL</label>
+                  <label htmlFor="preview_url" className="form-label">Preview Audio URL (supports YouTube)</label>
                   <input
                     type="url"
                     className="form-control"
                     id="preview_url"
                     name="preview_url"
                     value={formData.preview_url}
-                    onChange={handleInputChange}
+                    onChange={handlePreviewUrlChange}
+                    placeholder="https://youtube.com/watch?v=... or direct audio URL"
                   />
+                  {isYouTubeUrl(formData.preview_url) && (
+                    <div className="form-text text-primary">
+                      YouTube URL detected - will be processed for audio playback
+                    </div>
+                  )}
                 </div>
 
                 <button
@@ -283,17 +320,29 @@ const Admin = () => {
               ) : (
                 <div className="list-group">
                   {samplePacks.map((pack) => (
-                    <div key={pack.id} className="list-group-item d-flex justify-content-between align-items-center">
-                      <div>
-                        <h6 className="mb-1">{pack.title}</h6>
-                        <small className="text-muted">{pack.genre} • {pack.bpm} BPM • ${pack.price}</small>
+                    <div key={pack.id} className="list-group-item">
+                      <div className="d-flex justify-content-between align-items-start">
+                        <div className="flex-grow-1">
+                          <h6 className="mb-1">{pack.title}</h6>
+                          <small className="text-muted">{pack.genre} • {pack.bpm} BPM • ${pack.price}</small>
+                          <br />
+                          <small className="text-muted">Preview: {pack.previewUrl}</small>
+                        </div>
+                        <div className="btn-group btn-group-sm">
+                          <button
+                            className="btn btn-outline-primary"
+                            onClick={() => setEditingPack(pack)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="btn btn-outline-danger"
+                            onClick={() => handleDelete(pack.id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
-                      <button
-                        className="btn btn-outline-danger btn-sm"
-                        onClick={() => handleDelete(pack.id)}
-                      >
-                        Delete
-                      </button>
                     </div>
                   ))}
                 </div>
@@ -302,6 +351,16 @@ const Admin = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {editingPack && (
+        <EditSamplePackModal
+          pack={editingPack}
+          isOpen={!!editingPack}
+          onClose={() => setEditingPack(null)}
+          onSave={handleEditSave}
+        />
+      )}
     </div>
   );
 };
