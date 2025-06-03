@@ -306,45 +306,48 @@ const Admin = () => {
 
         {/* Existing Sample Packs */}
         <div className="col-md-6">
-          <div className="card">
+          <div className="card h-100">
             <div className="card-header">
               <h3 className="mb-0">Manage Sample Packs</h3>
             </div>
-            <div className="card-body">
+            <div className="card-body p-0" style={{ height: 'calc(100vh - 200px)', maxHeight: '600px' }}>
               {packsLoading ? (
-                <div className="text-center">
+                <div className="text-center p-4">
                   <div className="spinner-border text-primary" role="status">
                     <span className="visually-hidden">Loading...</span>
                   </div>
                 </div>
               ) : (
-                <div className="list-group">
-                  {samplePacks.map((pack) => (
-                    <div key={pack.id} className="list-group-item">
-                      <div className="d-flex justify-content-between align-items-start">
-                        <div className="flex-grow-1">
-                          <h6 className="mb-1">{pack.title}</h6>
-                          <small className="text-muted">{pack.genre} • {pack.bpm} BPM • ${pack.price}</small>
-                          <br />
-                          <small className="text-muted">Preview: {pack.previewUrl}</small>
-                        </div>
-                        <div className="btn-group btn-group-sm">
-                          <button
-                            className="btn btn-outline-primary"
-                            onClick={() => setEditingPack(pack)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="btn btn-outline-danger"
-                            onClick={() => handleDelete(pack.id)}
-                          >
-                            Delete
-                          </button>
+                <div className="overflow-auto h-100">
+                  <div className="list-group list-group-flush">
+                    {samplePacks.map((pack) => (
+                      <div key={pack.id} className="list-group-item p-3">
+                        <div className="d-flex justify-content-between align-items-start">
+                          <div className="flex-grow-1 me-2">
+                            <h6 className="mb-1 text-truncate">{pack.title}</h6>
+                            <small className="text-muted d-block">{pack.genre} • {pack.bpm} BPM • ${pack.price}</small>
+                            <small className="text-muted d-block text-truncate" style={{ maxWidth: '250px' }}>
+                              Preview: {pack.previewUrl}
+                            </small>
+                          </div>
+                          <div className="btn-group btn-group-sm flex-shrink-0">
+                            <button
+                              className="btn btn-outline-primary btn-sm"
+                              onClick={() => setEditingPack(pack)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="btn btn-outline-danger btn-sm"
+                              onClick={() => handleDelete(pack.id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
