@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { SamplePack } from "@/types/types";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +9,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -104,6 +106,9 @@ const EditSamplePackModal = ({ pack, isOpen, onClose, onSave }: EditSamplePackMo
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle>Edit Sample Pack</DialogTitle>
+          <DialogDescription>
+            Update the details of your sample pack including title, genre, BPM, price, and preview URL.
+          </DialogDescription>
         </DialogHeader>
         
         <div className="overflow-y-auto max-h-[calc(90vh-120px)] pr-2">
