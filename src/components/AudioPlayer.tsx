@@ -41,7 +41,6 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
         ref={audioRef} 
         src={audioSrc} 
         preload="metadata"
-        crossOrigin="anonymous"
         style={{ display: 'none' }}
       />
       <div className="d-flex align-items-center gap-2">

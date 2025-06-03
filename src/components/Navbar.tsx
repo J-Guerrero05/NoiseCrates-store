@@ -25,7 +25,7 @@ const Navbar = () => {
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
         <Link className="navbar-brand fw-bold" to="/">
-          NoiseCrate
+          <span style={{ color: '#9b87f5' }}>Noise</span>Crate
         </Link>
         
         <button

@@ -80,8 +80,7 @@ export const useAudioPlayer = ({ audioSrc }: UseAudioPlayerOptions) => {
     audio.removeEventListener("pause", handlePause);
     audio.removeEventListener("play", handlePlay);
 
-    // Set up audio element
-    audio.crossOrigin = "anonymous";
+    // Set up audio element - remove crossOrigin as it might cause issues
     audio.preload = "metadata";
 
     // Add event listeners

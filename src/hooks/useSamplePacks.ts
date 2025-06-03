@@ -3,16 +3,16 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { SamplePack } from "@/types/types";
 
-// Fallback working audio URLs
+// Using reliable audio URLs that should work without CORS issues
 const workingAudioUrls = [
-  "https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3",
-  "https://www.soundjay.com/misc/sounds/bell-ringing-01.mp3",
-  "https://www.soundjay.com/misc/sounds/bell-ringing-02.mp3",
-  "https://www.soundjay.com/misc/sounds/bell-ringing-03.mp3",
-  "https://www.soundjay.com/misc/sounds/bell-ringing-04.mp3",
-  "https://www.soundjay.com/misc/sounds/bell-ringing-06.mp3",
-  "https://www.soundjay.com/misc/sounds/bell-ringing-07.mp3",
-  "https://www.soundjay.com/misc/sounds/bell-ringing-08.mp3",
+  "https://www.w3schools.com/html/horse.mp3",
+  "https://www.w3schools.com/html/mov_bbb.mp4", // fallback
+  "https://file-examples.com/storage/fe68c42fa66da49de35cde6/2017/11/file_example_MP3_700KB.mp3",
+  "https://file-examples.com/storage/fe68c42fa66da49de35cde6/2017/11/file_example_MP3_1MG.mp3",
+  "https://sample-videos.com/zip/10/mp3/SampleAudio_0.4mb_mp3.mp3",
+  "https://sample-videos.com/zip/10/mp3/SampleAudio_0.7mb_mp3.mp3",
+  "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3",
+  "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba-online-audio-converter.com_.mp3",
 ];
 
 export const useSamplePacks = () => {
