@@ -64,7 +64,6 @@ export type Database = {
           image_url: string | null
           preview_url: string | null
           price: number
-          purchase_fk: string | null
           title: string
           updated_at: string
         }
@@ -77,7 +76,6 @@ export type Database = {
           image_url?: string | null
           preview_url?: string | null
           price: number
-          purchase_fk?: string | null
           title: string
           updated_at?: string
         }
@@ -90,19 +88,10 @@ export type Database = {
           image_url?: string | null
           preview_url?: string | null
           price?: number
-          purchase_fk?: string | null
           title?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "sample_packs_purchase_fk_fkey"
-            columns: ["purchase_fk"]
-            isOneToOne: true
-            referencedRelation: "purchased_packs"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       user_roles: {
         Row: {
