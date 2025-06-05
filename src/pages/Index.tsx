@@ -5,6 +5,9 @@ import SamplePackCard from "@/components/SamplePackCard";
 const Index = () => {
   const { data: samplePacks = [], isLoading, error } = useSamplePacks();
 
+  console.log("Index page - sample packs data:", samplePacks);
+  console.log("Index page - number of packs:", samplePacks.length);
+
   if (isLoading) {
     return (
       <div className="container mb-5">
@@ -18,6 +21,7 @@ const Index = () => {
   }
 
   if (error) {
+    console.error("Index page - error loading packs:", error);
     return (
       <div className="container mb-5">
         <div className="alert alert-danger" role="alert">
@@ -39,7 +43,7 @@ const Index = () => {
 
       <div className="row">
         <div className="col-12">
-          <h2 className="mb-4">Featured Sample Packs</h2>
+          <h2 className="mb-4">Featured Sample Packs ({samplePacks.length} total)</h2>
           {samplePacks.length === 0 ? (
             <div className="text-center my-5 py-5">
               <h3 className="text-muted">No sample packs available</h3>
@@ -47,11 +51,14 @@ const Index = () => {
             </div>
           ) : (
             <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
-              {samplePacks.map((pack) => (
-                <div key={pack.id} className="col">
-                  <SamplePackCard samplePack={pack} />
-                </div>
-              ))}
+              {samplePacks.map((pack, index) => {
+                console.log(`Rendering pack ${index + 1}:`, pack);
+                return (
+                  <div key={pack.id} className="col">
+                    <SamplePackCard samplePack={pack} />
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
