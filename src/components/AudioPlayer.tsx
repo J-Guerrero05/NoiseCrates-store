@@ -9,6 +9,12 @@ interface AudioPlayerProps {
 }
 
 const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
+  console.log("AudioPlayer - received audioSrc:", audioSrc);
+  
+  // Process the audio source to handle different URL types
+  const processedAudioSrc = audioSrc ? processAudioUrl(audioSrc) : "";
+  console.log("AudioPlayer - processed audioSrc:", processedAudioSrc);
+
   const {
     isPlaying,
     duration,
@@ -17,9 +23,10 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
     hasError,
     audioRef,
     togglePlay
-  } = useAudioPlayer({ audioSrc });
+  } = useAudioPlayer({ audioSrc: processedAudioSrc });
 
   if (!audioSrc) {
+    console.log("AudioPlayer - no audio source provided");
     return (
       <div className={`audio-player ${small ? 'audio-player-small' : ''}`}>
         <PlayButton
@@ -38,7 +45,7 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
     <div className={`audio-player ${small ? 'audio-player-small' : ''}`}>
       <audio 
         ref={audioRef} 
-        src={audioSrc} 
+        src={processedAudioSrc} 
         preload="metadata"
         style={{ display: 'none' }}
       />
@@ -64,9 +71,6 @@ const AudioPlayer = ({ audioSrc, small = false }: AudioPlayerProps) => {
   );
 };
 
-<<<<<<< Updated upstream
-export default AudioPlayer;
-=======
 // Helper function to process different types of audio URLs
 const processAudioUrl = (url: string): string => {
   if (!url) return "";
@@ -120,4 +124,3 @@ const processAudioUrl = (url: string): string => {
 };
 
 export default AudioPlayer;
->>>>>>> Stashed changes
