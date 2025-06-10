@@ -28,7 +28,6 @@ const EditSamplePackModal = ({ pack, isOpen, onClose, onSave }: EditSamplePackMo
     bpm: pack.bpm.toString(),
     price: pack.price.toString(),
     image_url: pack.imageUrl,
-    preview_url: pack.previewUrl
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,14 +37,6 @@ const EditSamplePackModal = ({ pack, isOpen, onClose, onSave }: EditSamplePackMo
     setFormData(prev => ({
       ...prev,
       [name]: value
-    }));
-  };
-
-  const handlePreviewUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const url = e.target.value;
-    setFormData(prev => ({
-      ...prev,
-      preview_url: url
     }));
   };
 
@@ -64,7 +55,6 @@ const handleSubmit = async (e: React.FormEvent) => {
         bpm: parseInt(formData.bpm),
         price: parseFloat(formData.price),
         image_url: formData.image_url,
-        preview_url: formData.preview_url,
         updated_at: new Date().toISOString()
       })
       .eq('id', pack.id);
@@ -94,7 +84,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         <DialogHeader>
           <DialogTitle>Edit Sample Pack</DialogTitle>
           <DialogDescription>
-            Update the details of your sample pack including title, genre, BPM, price, and preview URL.
+            Update the details of your sample pack including title, genre, BPM, and price.
           </DialogDescription>
         </DialogHeader>
         
@@ -180,18 +170,6 @@ const handleSubmit = async (e: React.FormEvent) => {
                 name="image_url"
                 value={formData.image_url}
                 onChange={handleInputChange}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="preview_url">Preview Audio URL (supports YouTube)</Label>
-              <Input
-                type="url"
-                id="preview_url"
-                name="preview_url"
-                value={formData.preview_url}
-                onChange={handlePreviewUrlChange}
-                placeholder="https://youtube.com/watch?v=... or direct audio URL"
               />
             </div>
 

@@ -308,9 +308,6 @@ const Admin = () => {
                           <div className="flex-grow-1 me-2">
                             <h6 className="mb-1 text-truncate">{pack.title}</h6>
                             <small className="text-muted d-block">{pack.genre} • {pack.bpm} BPM • ${pack.price}</small>
-                            <small className="text-muted d-block text-truncate" style={{ maxWidth: '250px' }}>
-                              Preview: {pack.previewUrl}
-                            </small>
                           </div>
                           <div className="btn-group btn-group-sm flex-shrink-0">
                             <button
