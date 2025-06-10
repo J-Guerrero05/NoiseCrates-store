@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { SamplePack } from "@/types/types";
 import { toast } from "sonner";
 import ChangePassword from "@/components/ChangePassword";
+import MyPurchases from "@/components/MyPurchases";
 
 interface Profile {
   username: string;
@@ -14,7 +15,7 @@ interface Profile {
 const Profile = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [purchasedPacks, setPurchasedPacks] = useState<(SamplePack & { purchasedAt: string })[]>([]);
+  const [purchasedPacks, setPurchasedPacks] = useState<SamplePack[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -48,42 +49,49 @@ const Profile = () => {
 
     const fetchPurchasedPacks = async () => {
       try {
+        console.log("Fetching purchased packs for user:", user.id);
+        
         const { data, error } = await supabase
           .from("purchased_packs")
-          .select("purchased_at, sample_packs(*)")
+          .select(`
+            purchased_at,
+            sample_packs!inner(
+              id,
+              title,
+              description,
+              genre,
+              bpm,
+              price,
+              image_url,
+              preview_url,
+              created_at
+            )
+          `)
           .eq("user_id", user.id)
           .order("purchased_at", { ascending: false });
 
-        if (error) throw error;
-
-        // Define the type for the joined row
-        interface PurchasedPackRow {
-          purchased_at: string;
-          sample_packs: SamplePack & {
-            image_url: string;
-            preview_url: string;
-            created_at: string;
-          };
+        if (error) {
+          console.error("Error fetching purchased packs:", error);
+          throw error;
         }
 
-        // Map the joined sample_packs data, handling possible join errors
-        const purchased = Array.isArray(data)
-          ? (data as unknown as PurchasedPackRow[])
-              .filter(
-                (row) =>
-                  row.sample_packs &&
-                  typeof row.sample_packs === "object" &&
-                  !("error" in row.sample_packs)
-              )
-              .map((row) => ({
-                ...row.sample_packs,
-                imageUrl: row.sample_packs.image_url,
-                previewUrl: row.sample_packs.preview_url,
-                createdAt: row.sample_packs.created_at,
-                purchasedAt: row.purchased_at
-              }))
-          : [];
+        console.log("Raw purchased packs data:", data);
 
+        // Map the data to match the SamplePack interface
+        const purchased = data?.map((row: any) => ({
+          id: row.sample_packs.id,
+          title: row.sample_packs.title,
+          description: row.sample_packs.description || '',
+          genre: row.sample_packs.genre,
+          bpm: row.sample_packs.bpm,
+          price: Number(row.sample_packs.price),
+          imageUrl: row.sample_packs.image_url || '',
+          previewUrl: row.sample_packs.preview_url || '',
+          createdAt: row.sample_packs.created_at,
+          purchasedAt: row.purchased_at
+        })) || [];
+
+        console.log("Mapped purchased packs:", purchased);
         setPurchasedPacks(purchased);
       } catch (error) {
         console.error("Error fetching purchased packs:", error);
@@ -220,61 +228,7 @@ const Profile = () => {
           </div>
         </div>
         <div className="col-lg-8">
-          <div className="card mb-4">
-            <div className="card-header bg-primary text-white">
-              <h5 className="mb-0">Purchase History</h5>
-            </div>
-            <div className="card-body">
-              {purchasedPacks.length === 0 ? (
-                <div className="text-center py-4">
-                  <p className="mb-0">You haven't made any purchases yet.</p>
-                </div>
-              ) : (
-                <div className="table-responsive">
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th>Sample Pack</th>
-                        <th>Genre</th>
-                        <th>Price</th>
-                        <th>Purchase Date</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {purchasedPacks.map((pack) => (
-                        <tr key={pack.id}>
-                          <td>
-                            <div className="d-flex align-items-center">
-                              <img
-                                src={pack.imageUrl}
-                                alt={pack.title}
-                                className="rounded me-2"
-                                width="40"
-                                height="40"
-                              />
-                              <div>
-                                <div className="fw-bold">{pack.title}</div>
-                                <div className="small text-muted">{pack.bpm} BPM</div>
-                              </div>
-                            </div>
-                          </td>
-                          <td>{pack.genre}</td>
-                          <td>${pack.price.toFixed(2)}</td>
-                          <td>{new Date(pack.createdAt).toLocaleDateString()}</td>
-                          <td>
-                            <button className="btn btn-sm btn-primary animated-btn">
-                              Download
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </div>
+          <MyPurchases purchasedPacks={purchasedPacks} />
         </div>
       </div>
       
