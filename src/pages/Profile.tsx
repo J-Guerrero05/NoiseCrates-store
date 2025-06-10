@@ -12,6 +12,23 @@ interface Profile {
   avatar_url: string | null;
 }
 
+interface DatabaseSamplePack {
+  id: string;
+  title: string;
+  description: string;
+  genre: string;
+  bpm: number;
+  price: number;
+  image_url: string;
+  preview_url: string;
+  created_at: string;
+}
+
+interface PurchasedPackRow {
+  purchased_at: string;
+  sample_packs: DatabaseSamplePack;
+}
+
 const Profile = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -93,8 +110,9 @@ const Profile = () => {
 
         console.log("Mapped purchased packs:", purchased);
         setPurchasedPacks(purchased);
+        
       } catch (error) {
-        console.error("Error fetching purchased packs:", error);
+        console.error("💥 Error fetching purchased packs:", error);
         toast.error("Failed to load purchase history");
       } finally {
         setIsLoading(false);
