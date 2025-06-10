@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -28,6 +29,7 @@ const Admin = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingPack, setEditingPack] = useState<SamplePack | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   if (!user) {
     navigate("/login");
@@ -150,9 +152,21 @@ const Admin = () => {
     }
   };
 
+  const handleEdit = (pack: SamplePack) => {
+    console.log('Edit button clicked for pack:', pack);
+    setEditingPack(pack);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditModalClose = () => {
+    setEditingPack(null);
+    setIsEditModalOpen(false);
+  };
+
   const handleEditSave = () => {
     queryClient.invalidateQueries({ queryKey: ['samplePacks'] });
     queryClient.invalidateQueries({ queryKey: ['genres'] });
+    handleEditModalClose();
   };
 
   return (
@@ -312,7 +326,7 @@ const Admin = () => {
                           <div className="btn-group btn-group-sm flex-shrink-0">
                             <button
                               className="btn btn-outline-primary btn-sm"
-                              onClick={() => setEditingPack(pack)}
+                              onClick={() => handleEdit(pack)}
                             >
                               Edit
                             </button>
@@ -338,8 +352,8 @@ const Admin = () => {
       {editingPack && (
         <EditSamplePackModal
           pack={editingPack}
-          isOpen={!!editingPack}
-          onClose={() => setEditingPack(null)}
+          isOpen={isEditModalOpen}
+          onClose={handleEditModalClose}
           onSave={handleEditSave}
         />
       )}

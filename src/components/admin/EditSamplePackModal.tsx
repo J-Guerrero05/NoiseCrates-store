@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SamplePack } from "@/types/types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -32,6 +32,18 @@ const EditSamplePackModal = ({ pack, isOpen, onClose, onSave }: EditSamplePackMo
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Reset form data when pack changes
+  useEffect(() => {
+    setFormData({
+      title: pack.title,
+      description: pack.description,
+      genre: pack.genre,
+      bpm: pack.bpm.toString(),
+      price: pack.price.toString(),
+      image_url: pack.imageUrl,
+    });
+  }, [pack]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -40,43 +52,41 @@ const EditSamplePackModal = ({ pack, isOpen, onClose, onSave }: EditSamplePackMo
     }));
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsSubmitting(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  try {
+    try {
+      const { error } = await supabase
+        .from('sample_packs')
+        .update({
+          title: formData.title,
+          description: formData.description,
+          genre: formData.genre,
+          bpm: parseInt(formData.bpm),
+          price: parseFloat(formData.price),
+          image_url: formData.image_url,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', pack.id);
 
-    const { error } = await supabase
-      .from('sample_packs')
-      .update({
-        title: formData.title,
-        description: formData.description,
-        genre: formData.genre,
-        bpm: parseInt(formData.bpm),
-        price: parseFloat(formData.price),
-        image_url: formData.image_url,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', pack.id);
+      if (error) {
+        console.error('Error updating sample pack:', error);
+        toast.error('Failed to update sample pack');
+        return;
+      }
 
-    if (error) {
+      toast.success('Sample pack updated successfully!');
+      onSave();
+      onClose();
+
+    } catch (error) {
       console.error('Error updating sample pack:', error);
       toast.error('Failed to update sample pack');
-      return;
+    } finally {
+      setIsSubmitting(false);
     }
-
-    toast.success('Sample pack updated successfully!');
-    onSave();
-    onClose();
-
-  } catch (error) {
-    console.error('Error updating sample pack:', error);
-    toast.error('Failed to update sample pack');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
-
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
