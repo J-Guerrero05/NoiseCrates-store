@@ -11,6 +11,23 @@ interface Profile {
   avatar_url: string | null;
 }
 
+interface DatabaseSamplePack {
+  id: string;
+  title: string;
+  description: string;
+  genre: string;
+  bpm: number;
+  price: number;
+  image_url: string;
+  preview_url: string;
+  created_at: string;
+}
+
+interface PurchasedPackRow {
+  purchased_at: string;
+  sample_packs: DatabaseSamplePack;
+}
+
 const Profile = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -48,45 +65,49 @@ const Profile = () => {
 
     const fetchPurchasedPacks = async () => {
       try {
+        console.log("🔍 Starting fetchPurchasedPacks for user:", user?.id);
+        
         const { data, error } = await supabase
           .from("purchased_packs")
-          .select("purchased_at, sample_packs(*)")
+          .select(`
+            purchased_at,
+            sample_packs!purchased_packs_pack_id_fkey (
+              id,
+              title,
+              description,
+              genre,
+              bpm,
+              price,
+              image_url,
+              preview_url,
+              created_at
+            )
+          `)
           .eq("user_id", user.id)
           .order("purchased_at", { ascending: false });
 
+        console.log("📊 Raw data:", data);
+
         if (error) throw error;
 
-        // Define the type for the joined row
-        interface PurchasedPackRow {
-          purchased_at: string;
-          sample_packs: SamplePack & {
-            image_url: string;
-            preview_url: string;
-            created_at: string;
-          };
-        }
+        const purchased = ((data as unknown as PurchasedPackRow[]) ?? []).map((row) => ({
+          id: row.sample_packs.id,
+          title: row.sample_packs.title,
+          description: row.sample_packs.description,
+          genre: row.sample_packs.genre,
+          bpm: row.sample_packs.bpm,
+          price: row.sample_packs.price,
+          imageUrl: row.sample_packs.image_url,
+          previewUrl: row.sample_packs.preview_url,
+          createdAt: row.sample_packs.created_at,
+          purchasedAt: row.purchased_at
+        }));
 
-        // Map the joined sample_packs data, handling possible join errors
-        const purchased = Array.isArray(data)
-          ? (data as unknown as PurchasedPackRow[])
-              .filter(
-                (row) =>
-                  row.sample_packs &&
-                  typeof row.sample_packs === "object" &&
-                  !("error" in row.sample_packs)
-              )
-              .map((row) => ({
-                ...row.sample_packs,
-                imageUrl: row.sample_packs.image_url,
-                previewUrl: row.sample_packs.preview_url,
-                createdAt: row.sample_packs.created_at,
-                purchasedAt: row.purchased_at
-              }))
-          : [];
-
+        console.log("✅ Final purchased array:", purchased);
         setPurchasedPacks(purchased);
+        
       } catch (error) {
-        console.error("Error fetching purchased packs:", error);
+        console.error("💥 Error fetching purchased packs:", error);
         toast.error("Failed to load purchase history");
       } finally {
         setIsLoading(false);
