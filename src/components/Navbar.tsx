@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useAdmin } from "@/hooks/useAdmin";
@@ -8,7 +7,7 @@ import { ShoppingCart, User, LogOut, Settings } from "lucide-react";
 const Navbar = () => {
   const { user, signOut } = useAuth();
   const { data: isAdmin } = useAdmin();
-  const { cart } = useCart();
+  const { cartItems } = useCart();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -19,7 +18,7 @@ const Navbar = () => {
     }
   };
 
-  const cartItemCount = cart.length;
+  const cartItemCount = cartItems.length;
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">

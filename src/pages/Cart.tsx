@@ -2,48 +2,34 @@
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
-  const { cart, removeFromCart, clearCart, totalPrice } = useCart();
+  const { cartItems, removeFromCart, clearCart, getTotalPrice, checkout } = useCart();
   const { user } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
 
+  const totalPrice = getTotalPrice();
+
   const handleCheckout = async () => {
     if (!user) {
-      toast.error("Please log in to complete your purchase");
       navigate("/login");
       return;
     }
 
     setIsProcessing(true);
-
     try {
-      // In a real app, you would process payment here
-      
-      // Record purchases in Supabase
-      for (const item of cart) {
-        await supabase
-          .from('purchased_packs')
-          .insert([{ user_id: user.id, pack_id: item.id }])
-          .throwOnError();
-      }
-
-      toast.success("Purchase completed successfully!");
-      clearCart();
+      await checkout();
       navigate("/profile");
     } catch (error) {
       console.error("Error during checkout:", error);
-      toast.error("There was an error processing your order. Please try again.");
     } finally {
       setIsProcessing(false);
     }
   };
 
-  if (cart.length === 0) {
+  if (cartItems.length === 0) {
     return (
       <div className="container py-5">
         <h2 className="mb-4">Your Cart</h2>
@@ -68,7 +54,7 @@ const Cart = () => {
         <div className="col-lg-8">
           <div className="card mb-4">
             <div className="card-body">
-              {cart.map((item) => (
+              {cartItems.map((item) => (
                 <div key={item.id} className="row mb-3 align-items-center">
                   <div className="col-md-2 col-4">
                     <img
